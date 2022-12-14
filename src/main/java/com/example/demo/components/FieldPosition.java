@@ -12,11 +12,9 @@ import java.util.function.Consumer;
 @Data
 public class FieldPosition extends Div implements DropTarget<Div> {
 
-    private final Integer index;
     private boolean isEmpty = true;
 
-    public FieldPosition(Integer index, BiConsumer<Integer, Operator> onAdd) {
-        this.index = index;
+    public FieldPosition(Consumer<Operator> onAdd, Consumer<CodePanel> onMove) {
 
         addClassName("field-position");
         addClassName("drop-target");
@@ -26,8 +24,13 @@ public class FieldPosition extends Div implements DropTarget<Div> {
         addDropListener(event -> {
             event.getDragSourceComponent().ifPresent(component -> {
 //                component.setVisible(false);
-                setEmpty(false);
-                onAdd.accept(index, Operator.valueOf(((ToolsButton) component).getText()));
+                if (component instanceof ToolsButton) {
+                    setEmpty(false);
+                    onAdd.accept(Operator.valueOf(((ToolsButton) component).getText()));
+                } else if (component instanceof CodePanel) {
+                    // existing block
+                    onMove.accept((CodePanel) component);
+                }
 //                field.getPositions().forEach(position ->
 //                        position.removeClassName("drop-target"));
 
