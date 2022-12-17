@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Div;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -24,12 +25,13 @@ public class FieldPosition extends Div implements DropTarget<Div> {
         addDropListener(event -> {
             event.getDragSourceComponent().ifPresent(component -> {
 //                component.setVisible(false);
-                if (component instanceof ToolsButton) {
+                Object data = event.getDragData().get();
+                if (data instanceof Operator) {
                     setEmpty(false);
-                    onAdd.accept(Operator.valueOf(((ToolsButton) component).getText()));
-                } else if (component instanceof CodePanel) {
+                    onAdd.accept((Operator) data);
+                } else if (data instanceof CodePanel) {
                     // existing block
-                    onMove.accept((CodePanel) component);
+                    onMove.accept((CodePanel) data);
                 }
 //                field.getPositions().forEach(position ->
 //                        position.removeClassName("drop-target"));
