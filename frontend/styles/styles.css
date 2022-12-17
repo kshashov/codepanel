@@ -1,21 +1,39 @@
 .field-position{
     width: 20px;
     height: 20px;
-    border-radius: 50%;
+    /*border-radius: 50%;*/
     text-align: center;
     vertical-align: center;
     background-color: white;
 }
 
 .drop-target {
-    border: 2px solid black;
+    width: 50px;
+    height: 10px;
+    background-color: lightgray;
+    display: none;
 }
 
-.v-drag-over-target.field-position{
+[drag] .drop-target {
+    display: block;
+}
+
+.drag-source {
+    width: 30px;
+    display: flex;
+    flex-grow: 1;
+    background-color: lightgray;
+}
+
+.v-dragged .drag-source {
+    background-color: lightgreen;
+}
+
+.v-drag-over-target.field-position {
     background-color: gray;
 }
 
-.football-field{
+.football-field {
     width: 380px;
     height: 600px;
     border: 2px solid black;
