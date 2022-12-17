@@ -8,7 +8,7 @@ public class ToolsButton2 extends Button implements DragSource<ToolsButton2> {
 
 
 
-    public ToolsButton2(Operator operator, CodePanel codePanelDropWrapper) {
+    public ToolsButton2(Operator operator, CodePanelDropWrapper codePanelDropWrapper) {
         super(operator.name()); // TODO
 
 //        addClassName("player-card");

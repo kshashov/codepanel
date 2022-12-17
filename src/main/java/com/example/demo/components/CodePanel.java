@@ -4,12 +4,12 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.LinkedList;
 
 public class CodePanel extends VerticalLayout {
     @Getter
     private final Operator operator;
+    private final ToolsButton2 toolsButton2;
     //    private final FieldPosition permanentDrop;
     private Span title = new Span();
     //    private FieldPosition before = new FieldPosition(0, this::onAdd);
@@ -30,8 +30,8 @@ public class CodePanel extends VerticalLayout {
 //            slot.addComponentAtIndex(0, createCodePanelDropWrapper(0, new CodePanel(null)));
 
         getElement().getStyle().set("border", "1px solid black");
-        add(new ToolsButton2(operator, this), slot);
-
+        toolsButton2 = new ToolsButton2(operator, findAncestor(CodePanelDropWrapper.class));
+        add(toolsButton2, slot);
     }
 
 //    public void highlight(Operator operator) {
@@ -47,23 +47,36 @@ public class CodePanel extends VerticalLayout {
 //    }
 
     private CodePanelDropWrapper createCodePanelDropWrapper(CodePanel e) {
-        return new CodePanelDropWrapper(e, operator -> {
+        CodePanelDropWrapper dropWrapper = new CodePanelDropWrapper(operator -> {
             int dropPanelIndex = children.indexOf(e);
             CodePanel e1 = new CodePanel(operator);
             CodePanelDropWrapper codePanelDropWrapper1 = createCodePanelDropWrapper(e1);
+            e1.setDragData(codePanelDropWrapper1);
             addChild(dropPanelIndex + 1, codePanelDropWrapper1);
-        }, codePanel -> {
+        }, codePanelWrapper -> {
             int dropPanelIndex = children.indexOf(e);
-            addChild(dropPanelIndex + 1, (CodePanelDropWrapper) slot.getComponentAt(children.indexOf(codePanel)));
+            addChild(dropPanelIndex + 1, codePanelWrapper);
+        }, codePanelWrapper -> {
+            children.remove(codePanelWrapper.getCodePanel());
+            codePanelWrapper.getElement().removeFromParent();
         });
+
+        if (e != null) {
+            dropWrapper.addCodePanel(e);
+        }
+
+        return dropWrapper;
     }
 
     private void addChild(int index, CodePanelDropWrapper codePanelDropWrapper) {
         int oldPanelIndex = children.indexOf(codePanelDropWrapper.getCodePanel());
-
         if (children.remove(codePanelDropWrapper.getCodePanel())
                 && (oldPanelIndex < index)) {
             index--;
+        }
+
+        if (codePanelDropWrapper.getParent().isPresent()) {
+            codePanelDropWrapper.delete();
         }
 
         if (index == children.size()) {
@@ -72,9 +85,12 @@ public class CodePanel extends VerticalLayout {
             children.add(index, codePanelDropWrapper.getCodePanel());
         }
 
-        codePanelDropWrapper.getElement().removeFromParent();
         slot.addComponentAtIndex(index, codePanelDropWrapper);
 
+    }
+
+    public void setDragData(CodePanelDropWrapper codePanelDropWrapper) {
+        toolsButton2.setDragData(codePanelDropWrapper);
     }
 
 //    private void onDelete(CodePanel codePanel) {
